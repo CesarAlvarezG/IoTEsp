@@ -5,8 +5,8 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 2 de enero de 2019
 
-  Versión: 0.0.2
-  Descripción: Programa para el uso del puerto serial
+  Versión: 0.0.3
+  Descripción: Programa para el uso del puerto serial y graficación de 2 señales
 */
 
 
@@ -29,9 +29,13 @@ void setup() {
   Serial.println("\nPrueba de puerto serial para ESP32");
 }
 
-int i;
+int i=0;
+float j=0;
 
 void loop() {
-  Serial.println(i++);
+  Serial.print(i++);
+  Serial.print(",");
+  j=i+random(-5,5);
+  Serial.println(j++);
   delay(TAZA_MUESTREO);  
 }
