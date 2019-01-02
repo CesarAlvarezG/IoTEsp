@@ -5,32 +5,33 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 2 de enero de 2019
 
-  Versión: 0.0.1
-  Descripción: Programa Blink para la tarjeta de desarrollo Geekworm
+  Versión: 0.0.2
+  Descripción: Programa para el uso del puerto serial
 */
 
 
 #include <dummy.h> //Libreria para identificar los pines del EPS32
 
+
 #define LED_BUILTIN 27 
 #define LED_TEST 0
-//#define LED_PIN 35 
+#define TAZA_SERIAL 115200  //Velocidad por defecto en el ESP32
+#define TAZA_MUESTREO 1000
+
 
 
 void setup() {
-  // initialize digital pin LED_BUILTIN as an output.
+  // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_TEST, OUTPUT);
+  //Inicialización de la comunicación serial
+  Serial.begin(TAZA_SERIAL);
+  Serial.println("\nPrueba de puerto serial para ESP32");
 }
 
+int i;
 
 void loop() {
-  //Encender los led
-  digitalWrite(LED_BUILTIN, HIGH);
-  digitalWrite(LED_TEST, HIGH);
-  delay(1000);//Esperar 1 segundo
-  //Apagar los led
-  digitalWrite(LED_BUILTIN, LOW);
-  digitalWrite(LED_TEST, LOW);
-  delay(1000);//Esperar 1 segundo
+  Serial.println(i++);
+  delay(TAZA_MUESTREO);  
 }
