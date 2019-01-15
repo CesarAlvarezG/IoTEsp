@@ -5,13 +5,13 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 15 de enero de 2019
 
-  Versión: 0.0.11
+  Versión: 0.0.12
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
                Conexión al WiFi y monitoreo de la conexión
                Conexión a la plataforma IotView y monitoreo de la conexión
-               
+               Envio de datos de Humedad y Temperatura a la plataforma IotView
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -30,6 +30,9 @@
 #define TAZA_SERIAL 115200  //Velocidad por defecto en el ESP32
 #define TAZA_REFRESCO_PANTALLA 100//Taza de refresco de la pantalla
 
+//Sensores creados en la plataforma IotView
+#define DirVarTrabajo1 1
+#define DirVarTrabajo2 2
 
 #define DTHPIN 25      //Pin al que se conecto el sensor
 #define DTHTYPE DHT11 //Tipo de sensor
@@ -82,7 +85,11 @@ void leerSensorDHT() {
   //Visualización en la pantalla OLED
   Figura.SetTrabajoVar1(t);
   Figura.SetTrabajoVar2(h);
-  Figura.SetApoyoVar2(i++); 
+  Figura.SetApoyoVar2(i++);
+
+  //Envio de las señales a la plataforma IotView
+  IoTViewSistema.EnviarDato(DirVarTrabajo1,t);
+  IoTViewSistema.EnviarDato(DirVarTrabajo2,h);
 }
 
 void estadoStatus() {
