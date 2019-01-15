@@ -69,7 +69,7 @@ class IotViewPantalla
     //Variables de apoyo
     float ApoyoVar1;
     float ApoyoVar2;
-    //VAriables de trabajo
+    //Variables de trabajo
     float TrabajoVar1;
     float TrabajoVar2;
     //Etiquetas a las variables

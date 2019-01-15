@@ -5,12 +5,13 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 15 de enero de 2019
 
-  Versión: 0.0.9
+  Versión: 0.0.10
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
                Conexión al WiFi y monitoreo de la conexión
-
+               Conexión a la plataforma IotView
+               
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -18,10 +19,11 @@
 #include <dummy.h> //Libreria para identificar los pines del EPS32
 #include <Wire.h> //Libreria para el manejo del puerto I2C
 #include <Ticker.h>//Libreria para el manejo de las tareas paralelas
-#include <WiFi.h>//Libreria para el manejo del WiFi
+//#include <WiFi.h>//Libreria para el manejo del WiFi
 #include "DHT.h"  //Libreria para el DHT11
 #include "SSD1306Wire.h"//Libreria para el manejo de la pantalla OLED
 #include "IotViewOled.h"//Libreria con interfaz grafica implementada en la pantalla OLED
+#include "IotView.h"//Libreria para la conexión a la plataforma IotView
 
 #define LED_BUILTIN 27 
 #define LED_TEST 0
@@ -33,11 +35,21 @@
 #define DTHTYPE DHT11 //Tipo de sensor
 
 
+
+//Declaración de los elementos para usar IotView
+
+int status = WL_IDLE_STATUS;
+const int httpPort = 80;
+char host[]="iotview.herokuapp.com";
+char token[]="token";
+
 //Declaración de objetos usados
 
 DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
 IotViewPantalla Figura;//Declaración del Objeto Figura
 SSD1306Wire  display(0x3c, 21, 22);//Declaración del Objeto display
+WiFiClient client;
+IotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
 
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
 Ticker TickerWiFi;//Declaración de la tarea de monitorear la conexión a WiFi
@@ -47,9 +59,6 @@ Ticker TickerWiFi;//Declaración de la tarea de monitorear la conexión a WiFi
 char ssid[] = "ssid";
 char password[] = "password";
 
-
-int status = WL_IDLE_STATUS;
-WiFiClient client;
 
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =5;//Tiempo en segundos
@@ -120,8 +129,12 @@ void setup() {
  Serial.println("Dirección IP: ");
  Serial.println(WiFi.localIP());
  
+ //Inicialización de la comunicación a IotView
+ Serial.print("connecting to ");
+ Serial.println(host);
+ if(IoTViewSistema.Conectar())Figura.ServidorOn();
   
-  //Inicialización del sensor
+ //Inicialización del sensor
   dht.begin();
    
   //Inicialización del Serial Ploter
