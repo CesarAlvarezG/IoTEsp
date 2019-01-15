@@ -12,8 +12,6 @@ IotView::IotView(String host,String token, int port, WiFiClient *clie)
   Var=0;
   DirVar=0;
   cliente=clie;
-  
-  
 }
 
 
@@ -25,7 +23,6 @@ bool IotView::GetConectServidor(void)
  return conexionServidor;
 }
 
-    
 String IotView::GetHost(void)
 {
  return Host;  
@@ -40,6 +37,18 @@ int IotView::GetHttpPort(void)
 {
  return httpPort;  
 }
+
+bool IotView::GetStatus(void)
+{
+ if(cliente->available())
+ {
+    status=true; 
+  }else{
+        status=false;
+        }
+ return status;  
+}
+
 //Funciones varias
 
 void IotView::EnviarDato(int puerto, float medida)
@@ -59,12 +68,9 @@ void IotView::EnviarDato(int puerto, float medida)
           c="Host: ";
           c+=Host;
           cliente->println(c);
-          //Serial->println(c);
           cliente->println();
-          //Serial->println();
           while(cliente->available()>0){
               c=cliente->read();
-              //Serial.print(c);
           }
   }
  return; 

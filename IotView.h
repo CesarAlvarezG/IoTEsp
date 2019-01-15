@@ -26,7 +26,7 @@ class IotView
     String Host;
     String Token;
     int  httpPort;
-    int status;
+    bool status;
     WiFiClient *cliente;
     int DirVar;
     float Var;
@@ -39,7 +39,7 @@ class IotView
     String GetHost(void);
     String GetToken(void);
     int GetHttpPort(void);
-    int GetStatus(void);
+    bool GetStatus(void);
     bool GetConectServidor(void);
     //Funciones varias
     bool Conectar();

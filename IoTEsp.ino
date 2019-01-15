@@ -5,12 +5,12 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 15 de enero de 2019
 
-  Versión: 0.0.10
+  Versión: 0.0.11
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
                Conexión al WiFi y monitoreo de la conexión
-               Conexión a la plataforma IotView
+               Conexión a la plataforma IotView y monitoreo de la conexión
                
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
@@ -52,7 +52,7 @@ WiFiClient client;
 IotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
 
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
-Ticker TickerWiFi;//Declaración de la tarea de monitorear la conexión a WiFi
+Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
 
 //Declaración de las variables para el uso del WiFi
 
@@ -62,7 +62,7 @@ char password[] = "password";
 
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =5;//Tiempo en segundos
-float tazaRefrescoWiFi =1;//Tiempo en segundos
+float tazaRefrescoStatus =1;//Tiempo en segundos
 
 float h=0;//Humedad
 float t=0;//Temperatura
@@ -85,13 +85,19 @@ void leerSensorDHT() {
   Figura.SetApoyoVar2(i++); 
 }
 
-void estadoWiFi() {
+void estadoStatus() {
   if(WiFi.status() == WL_CONNECTED)
   {
     Figura.WiFiOn();
     }else{
           Figura.WiFiOff();
          }
+  if(IoTViewSistema.GetStatus()==true)
+     {
+      Figura.ServidorOn();
+      }else{
+            Figura.ServidorOff();
+        }       
 }
 
 void setup() {
@@ -132,7 +138,7 @@ void setup() {
  //Inicialización de la comunicación a IotView
  Serial.print("connecting to ");
  Serial.println(host);
- if(IoTViewSistema.Conectar())Figura.ServidorOn();
+ IoTViewSistema.Conectar();
   
  //Inicialización del sensor
   dht.begin();
@@ -144,7 +150,7 @@ void setup() {
 
   //Inicialización de la tarea de refresco
   TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
-  TickerWiFi.attach(tazaRefrescoWiFi, estadoWiFi);
+  TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
 }
 
 
