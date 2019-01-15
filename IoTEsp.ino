@@ -5,11 +5,11 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 15 de enero de 2019
 
-  Versión: 0.0.8
+  Versión: 0.0.9
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
-               Conexión al WiFi
+               Conexión al WiFi y monitoreo de la conexión
 
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
@@ -40,17 +40,20 @@ IotViewPantalla Figura;//Declaración del Objeto Figura
 SSD1306Wire  display(0x3c, 21, 22);//Declaración del Objeto display
 
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
+Ticker TickerWiFi;//Declaración de la tarea de monitorear la conexión a WiFi
 
 //Declaración de las variables para el uso del WiFi
 
 char ssid[] = "ssid";
 char password[] = "password";
 
+
 int status = WL_IDLE_STATUS;
 WiFiClient client;
 
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =5;//Tiempo en segundos
+float tazaRefrescoWiFi =1;//Tiempo en segundos
 
 float h=0;//Humedad
 float t=0;//Temperatura
@@ -73,8 +76,13 @@ void leerSensorDHT() {
   Figura.SetApoyoVar2(i++); 
 }
 
-void refrescarPantalla() {
-  Figura.Display();  //Función encargada de refrescar la pantalla
+void estadoWiFi() {
+  if(WiFi.status() == WL_CONNECTED)
+  {
+    Figura.WiFiOn();
+    }else{
+          Figura.WiFiOff();
+         }
 }
 
 void setup() {
@@ -106,8 +114,7 @@ void setup() {
        {
         delay(500);
         Serial.print(".");
-       }
- Figura.WiFiOn();      
+       }      
  Serial.println("");
  Serial.println("WiFi connectado");
  Serial.println("Dirección IP: ");
@@ -124,6 +131,7 @@ void setup() {
 
   //Inicialización de la tarea de refresco
   TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
+  TickerWiFi.attach(tazaRefrescoWiFi, estadoWiFi);
 }
 
 
