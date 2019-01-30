@@ -19,6 +19,8 @@
 //Librerias
 #include <dummy.h>
 #include <WiFi.h>//Libreria para el manejo del WiFi
+#include <ArduinoJson.h>
+
 
 class IotView
 {
@@ -28,19 +30,39 @@ class IotView
     int  httpPort;
     bool status;
     WiFiClient *cliente;
-    int DirVar;
-    float Var;
     bool conexionServidor;
+    //Datos de conexión al sistema
+    //Datos de configuración de la pagina
+    int idSistema;
+    String Nombre;
+    String Descripcion;
+    String Nvar;
+    float Var;
+    String NMensaje;
+    String Mensaje;
+    String TokenSensor1;
+    String TokenSensor2;
+    String Respuesta;
+    //Funciones privadas
   public:
     //Constructores
     IotView(String host,String token, int port, WiFiClient *clie);
     //Funciones Set
-    //Funciones Get
+    //Funciones Get conexión
     String GetHost(void);
     String GetToken(void);
     int GetHttpPort(void);
     bool GetStatus(void);
     bool GetConectServidor(void);
+    //Funciones Get configuración de IotView
+     void GetConfiguracion(void);
+    String GetNombre(void);
+    String GetDescripcion(void);
+    String GetNvar(void);
+    float GetVar(void);
+    String GetNMensaje(void);
+    String GetMensaje(void);
+    String GetRespuesta(void);
     //Funciones varias
     bool Conectar();
     void EnviarDato(int,float);
