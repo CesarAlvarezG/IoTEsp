@@ -7,6 +7,7 @@ IotViewPantalla::IotViewPantalla(void)
 {
  FWifi=false;
  Servidor=false;
+ NombreServidor="Servidor";
  ApoyoVar1=0;
  ApoyoVar2=0;
  TrabajoVar1=0;
@@ -14,6 +15,12 @@ IotViewPantalla::IotViewPantalla(void)
 }
 
 //----------------------------Funciones Set----------------------------
+
+void IotViewPantalla::SetNombreServidor(String tem)
+{
+  NombreServidor=tem;
+}
+   
 
 void IotViewPantalla::SetTrabajoEtiqueta1(String tem)
 {
@@ -123,13 +130,13 @@ void IotViewPantalla::Estado(void)
   displayOled->drawString(XOrigenEstado,YOrigenEstado+1,"WiFi:");
   if(FWifi)
      {
-       displayOled->drawCircle(XAnchoEstado/2-TamanoIndicador/2, YAltoEstado/2, TamanoIndicador/2-1);
+       displayOled->drawCircle(XAnchoEstado/3-TamanoIndicador/2, YAltoEstado/2, TamanoIndicador/2-1);
       }else{
-            displayOled->drawRect(XAnchoEstado/2-TamanoIndicador,YOrigenEstado,TamanoIndicador,TamanoIndicador); 
+            displayOled->drawRect(XAnchoEstado/3-TamanoIndicador,YOrigenEstado,TamanoIndicador,TamanoIndicador); 
         }
-  displayOled->setTextAlignment(TEXT_ALIGN_LEFT);
+  displayOled->setTextAlignment(TEXT_ALIGN_RIGHT);
   displayOled->setFont(ArialMT_Plain_10);
-  displayOled->drawString(XAnchoEstado/2+1,YOrigenEstado+1,"Servidor:");
+  displayOled->drawString(XAnchoEstado-TamanoIndicador-1,YOrigenEstado+1,NombreServidor+":");
   if(Servidor)
      {
        displayOled->drawCircle(XAnchoEstado-TamanoIndicador/2, YAltoEstado/2, TamanoIndicador/2-1);

@@ -66,6 +66,8 @@ class IotViewPantalla
   private:
     bool FWifi;//Bandera de conexión a WiFi
     bool Servidor;//Bandera de conexión al Servidor
+    //Nombre del servidor
+    String NombreServidor;
     //Variables de apoyo
     float ApoyoVar1;
     float ApoyoVar2;
@@ -94,6 +96,7 @@ class IotViewPantalla
     void WiFiOff(void);
     void ServidorOn(void);
     void ServidorOff(void);
+    void SetNombreServidor(String);
     void SetApoyoVar1(float);
     void SetApoyoVar2(float);
     void SetTrabajoVar1(float);

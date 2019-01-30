@@ -5,7 +5,7 @@
   Desarrollado por: César Augusto Álvarez Gaspar
   Fecha: 30 de enero de 2019
 
-  Versión: 0.0.14
+  Versión: 0.0.15
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
@@ -14,6 +14,7 @@
                Envio de datos de Humedad y Temperatura a la plataforma IotView
                Recepción de los datos de configuración del sistema en la plataforma IotView
                Extracción de datos importantes del token
+               Presentación del nombre del sistema en la pantalla
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -132,6 +133,7 @@ void setup() {
   Figura.SetDisplay(&display);
   Figura.Maqueta();
   Figura.Display();
+ 
   Figura.SetTrabajoEtiqueta1("T [°C]");
   Figura.SetTrabajoEtiqueta2("H [%]"); 
   Figura.SetApoyoEtiqueta1("Ts");
@@ -164,6 +166,7 @@ void setup() {
  Serial.print(IoTViewSistema.GetRespuesta());
  Serial.print("Nombre: ");
  Serial.println(IoTViewSistema.GetNombre());
+  Figura.SetNombreServidor(IoTViewSistema.GetNombre());
  Serial.print("Descripcion: ");
  Serial.println(IoTViewSistema.GetDescripcion());
  Serial.print("Nvar: ");
