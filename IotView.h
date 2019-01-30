@@ -4,6 +4,10 @@
  * Esp32: Ok
  * Versión: 0.1
  *
+ *
+ *El token posee la siguiente esctructura
+ *
+ *IdSistema : NumeroSensores ; IdSensor1 / TokenSensor1 & IdSensor2 / TokenSensor2 & ......
  */
 
 
@@ -40,6 +44,9 @@ class IotView
     float Var;
     String NMensaje;
     String Mensaje;
+    int nSensores;
+    int idSensor1;
+    int idSensor2;
     String TokenSensor1;
     String TokenSensor2;
     String Respuesta;

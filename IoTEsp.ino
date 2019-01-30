@@ -3,9 +3,9 @@
   Esp32: ok
 
   Desarrollado por: César Augusto Álvarez Gaspar
-  Fecha: 15 de enero de 2019
+  Fecha: 30 de enero de 2019
 
-  Versión: 0.0.13
+  Versión: 0.0.14
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
@@ -13,6 +13,7 @@
                Conexión a la plataforma IotView y monitoreo de la conexión
                Envio de datos de Humedad y Temperatura a la plataforma IotView
                Recepción de los datos de configuración del sistema en la plataforma IotView
+               Extracción de datos importantes del token
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -32,6 +33,7 @@
 #define TAZA_SERIAL 115200  //Velocidad por defecto en el ESP32
 #define TAZA_REFRESCO_PANTALLA 100//Taza de refresco de la pantalla
 
+
 //Sensores creados en la plataforma IotView
 #define DirVarTrabajo1 1
 #define DirVarTrabajo2 2
@@ -46,8 +48,15 @@
 int status = WL_IDLE_STATUS;
 const int httpPort = 80;
 char host[]="iotview.herokuapp.com";
-char token[]="1:v9clypYoSq;YMyedSLQx0";
-
+char token[]="1:2;1/v9clypYoSq&2/YMyedSLQx0";
+/*
+ *IdSistema=1 : 
+ *NumeroSensores=2 ; 
+ *IdSensor1=1 / 
+ *TokenSensor1= v9clypYoSq & 
+ *IdSensor2=2 / 
+ *TokenSensor2= YMyedSLQx0 & 
+ */
 //Declaración de objetos usados
 
 DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
@@ -62,15 +71,8 @@ Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi
 
 //Declaración de las variables para el uso del WiFi
 
-//char ssid[] = "ssid";
-//char password[] = "password";
-
-char ssid[] = "ALVAREZ MORALEZ";
-char password[] = "97395883";
-
-//const char* ssid     = "CesarAndroid";
-//const char* password = "24fb64ca5d11";
-
+char ssid[] = "ssid";
+char password[] = "password";
 
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =60;//Tiempo en segundos

@@ -9,8 +9,32 @@ IotView::IotView(String host,String token, int port, WiFiClient *clie)
   Token=token;
   httpPort=port;
   status=WL_IDLE_STATUS;
+
+  //Extraer datos de configuración del Token
+  int h=token.indexOf(":");
+  idSistema=token.substring(0,h).toInt();  
+  token.remove(0,h+1);
+  
+  h=token.indexOf(";");
+  nSensores=token.substring(0,h).toInt();
+  token.remove(0,h+1);
+  
+  h=token.indexOf( "/");
+  idSensor1=token.substring(0,h).toInt();
+  token.remove(0,h+1);
+  
+  h=token.indexOf( "&");
+  TokenSensor1=token.substring(0,h);
+  token.remove(0,h+1);
+  
+  h=token.indexOf( "/");
+  idSensor2=token.substring(0,h).toInt();
+  token.remove(0,h+1);
+  
+  h=token.indexOf( "&");
+  TokenSensor2=token.substring(0,h);
+  
   Var=0;
-  idSistema=1;
   cliente=clie;
   Nombre="Nombre";
   Descripcion="Descripción";
