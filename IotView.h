@@ -23,7 +23,12 @@
 //Librerias
 #include <dummy.h>
 #include <WiFi.h>//Libreria para el manejo del WiFi
+#include <Wire.h> //Libreria para el manejo del puerto I2C
+
 #include <ArduinoJson.h>
+#include "SSD1306Wire.h"//Libreria para el manejo de la pantalla OLED
+#include "IotViewEsp32.h"//Libreria con las configuraciones básicas del ESP32
+#include "IotViewOled.h"//Libreria con interfaz grafica implementada en la pantalla OLED
 
 
 class IotView

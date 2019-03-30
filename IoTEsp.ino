@@ -3,9 +3,9 @@
   Esp32: ok
 
   Desarrollado por: César Augusto Álvarez Gaspar
-  Fecha: 30 de enero de 2019
+  Fecha: 30 de marzo de 2019
 
-  Versión: 0.0.15
+  Versión: 0.0.15.1
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
@@ -20,29 +20,9 @@
 
 
 #include <dummy.h> //Libreria para identificar los pines del EPS32
-#include <Wire.h> //Libreria para el manejo del puerto I2C
 #include <Ticker.h>//Libreria para el manejo de las tareas paralelas
-
-//#include <WiFi.h>//Libreria para el manejo del WiFi
-#include "DHT.h"  //Libreria para el DHT11
-#include "SSD1306Wire.h"//Libreria para el manejo de la pantalla OLED
-#include "IotViewOled.h"//Libreria con interfaz grafica implementada en la pantalla OLED
 #include "IotView.h"//Libreria para la conexión a la plataforma IotView
-
-#define LED_BUILTIN 27 
-#define LED_TEST 0
-#define TAZA_SERIAL 115200  //Velocidad por defecto en el ESP32
-#define TAZA_REFRESCO_PANTALLA 100//Taza de refresco de la pantalla
-
-
-//Sensores creados en la plataforma IotView
-#define DirVarTrabajo1 1
-#define DirVarTrabajo2 2
-
-#define DTHPIN 25      //Pin al que se conecto el sensor
-#define DTHTYPE DHT11 //Tipo de sensor
-
-
+#include "DHT.h"  //Libreria para el DHT11
 
 //Declaración de los elementos para usar IotView
 
@@ -58,15 +38,20 @@ char token[]="1:2;1/v9clypYoSq&2/YMyedSLQx0";
  *IdSensor2=2 / 
  *TokenSensor2= YMyedSLQx0 & 
  */
-//Declaración de objetos usados
 
-DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
-IotViewPantalla Figura;//Declaración del Objeto Figura
+//Declaración de objetos usados en IotView
+
+
 SSD1306Wire  display(0x3c, 21, 22);//Declaración del Objeto display
 WiFiClient client;
+
+//La pantalla tiene un acople debil con respecto al objeto de uso de IotView
+IotViewPantalla Figura;//Declaración del Objeto Figura
 IotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
 
+//Declaración de objetos usados en la aplicación en particular
 
+DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
 Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
 
@@ -75,10 +60,12 @@ Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi
 char ssid[] = "ssid";
 char password[] = "password";
 
+
+//Acciones propias de la aplicación en particular
+
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =60;//Tiempo en segundos
 float tazaRefrescoStatus =1;//Tiempo en segundos
-
 float h=0;//Humedad
 float t=0;//Temperatura
 int i=0;//Numero de iteracción
@@ -119,6 +106,8 @@ void estadoStatus() {
         }       
 }
 
+//----------------------------------------------------------------------------------------------------------
+
 void setup() {
   // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
@@ -131,7 +120,7 @@ void setup() {
   
   //Inicialización de la pantalla OLED
   Figura.SetDisplay(&display);
-  Figura.Maqueta();
+  Figura.Maqueta();//Muestra la cn¿onfiguración de la pantalla
   Figura.Display();
  
   Figura.SetTrabajoEtiqueta1("T [°C]");

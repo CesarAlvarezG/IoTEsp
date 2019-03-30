@@ -54,7 +54,7 @@ void IotView::GetConfiguracion(void)
     {
       
       Solicitud="GET";
-      Solicitud+=" /iotsistema/";
+      Solicitud+=" /api/sistemas/";
       Solicitud+=idSistema;
       Solicitud+=" HTTP/1.1\r\n";
       Respuesta+=Solicitud;
