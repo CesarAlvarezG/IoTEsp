@@ -14,7 +14,7 @@
 
 
 //Archivo IotView.h
-
+#include "IotViewSistema.h"
 //Declaración del objeto
 
 #ifndef __IOTVIEW_H__
@@ -29,9 +29,10 @@
 #include "SSD1306Wire.h"//Libreria para el manejo de la pantalla OLED
 #include "IotViewEsp32.h"//Libreria con las configuraciones básicas del ESP32
 #include "IotViewOled.h"//Libreria con interfaz grafica implementada en la pantalla OLED
+#include "urlEncodeDecode.h"//Libreria para codificar la url
 
 
-class IotView
+class TIotView
 {
   private:
     String Host;
@@ -43,24 +44,17 @@ class IotView
     //Datos de conexión al sistema
     //Datos de configuración de la pagina
     int idSistema;
-    String Nombre;
-    String Descripcion;
-    String Nvar;
-    float Var;
-    String NMensaje;
-    String Mensaje;
     int nSensores;
-    int idSensor1;
-    int idSensor2;
-    String TokenSensor1;
-    String TokenSensor2;
     String Respuesta;
     //Funciones privadas
+    String Conexion(String, String, String);
   public:
     //Constructores
-    IotView(String host,String token, int port, WiFiClient *clie);
+    TIotView(String host,String token, int port, WiFiClient *clie);
+    TIotViewSistema Sistema;
     //Funciones Set
     //Funciones Get conexión
+    String extraerJson(String);
     String GetHost(void);
     String GetToken(void);
     int GetHttpPort(void);
@@ -68,43 +62,15 @@ class IotView
     bool GetConectServidor(void);
     //Funciones Get configuración de IotView
      void GetConfiguracion(void);
-    String GetNombre(void);
-    String GetDescripcion(void);
-    String GetNvar(void);
-    float GetVar(void);
-    String GetNMensaje(void);
-    String GetMensaje(void);
     String GetRespuesta(void);
     //Funciones varias
     bool Conectar();
     void EnviarDato(int,float);
     float RecibirDato(int);
+    void Pull(void);
+    String Push(void);
 };
 
-class IotViewSensor
-{
-  private:
-    int id;
-    String Nombre;
-    String Tipo;
-    String Confirmacion;
-    String NVar;
-    float Var;
-    String NMensaje;
-    String Mensaje;
-  public:
-    //Constructores
-    IotViewSensor();
-    //Funciones Get
-    String GetNombre(void);
-    String GetTipo(void);
-    String GetConfirmacion(void);
-    String GetNVar(void);
-    float GetVar(void);
-    String GetNMensaje(void);
-    String GetMensaje(void);
-    //Funciones Pull
-};
 
 
 #endif
