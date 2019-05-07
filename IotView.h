@@ -81,4 +81,30 @@ class IotView
     float RecibirDato(int);
 };
 
+class IotViewSensor
+{
+  private:
+    int id;
+    String Nombre;
+    String Tipo;
+    String Confirmacion;
+    String NVar;
+    float Var;
+    String NMensaje;
+    String Mensaje;
+  public:
+    //Constructores
+    IotViewSensor();
+    //Funciones Get
+    String GetNombre(void);
+    String GetTipo(void);
+    String GetConfirmacion(void);
+    String GetNVar(void);
+    float GetVar(void);
+    String GetNMensaje(void);
+    String GetMensaje(void);
+    //Funciones Pull
+};
+
+
 #endif

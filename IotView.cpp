@@ -46,7 +46,7 @@ IotView::IotView(String host,String token, int port, WiFiClient *clie)
 
 void IotView::GetConfiguracion(void)
 {
- StaticJsonBuffer<500> jsonBuffer;
+ StaticJsonBuffer<1500> jsonBuffer;
  String Solicitud;
  String c;
  //Solicitud de los datos al seervidor
@@ -79,15 +79,23 @@ void IotView::GetConfiguracion(void)
             String line=cliente->readStringUntil('\r');
             Respuesta+=line;
            }
-    //Extracción de los datos de configuración 
-    int h=Respuesta.indexOf("{")-1;
-    int k=Respuesta.indexOf("}")+1;
+    //Extracción de la cadena JSON
+    int h=Respuesta.indexOf("\n{");
+    int k=Respuesta.indexOf("}\n")+1;
     String Datos=Respuesta.substring(h,k);
     JsonObject& obj=jsonBuffer.parseObject(Datos);
+    //Verificación de la cadena JSON
     if(!obj.success())
     {
         return;
     }
+    //Veriricación de la exixtencia de los datos
+    const char* error=obj["error"];
+    if(error == nullptr)
+      {
+        return;
+      }
+    //Extracción de los datos de configuración 
     Nombre=obj["Nombre"].as<char*>();
     Descripcion=obj["Descripcion"].as<char*>();
     Nvar=obj["NVar"].as<char*>();

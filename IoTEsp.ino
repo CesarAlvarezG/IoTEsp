@@ -3,9 +3,9 @@
   Esp32: ok
 
   Desarrollado por: César Augusto Álvarez Gaspar
-  Fecha: 30 de marzo de 2019
+  Fecha: 3 de abril de 2019
 
-  Versión: 0.0.15.1
+  Versión: 0.0.16
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
@@ -15,6 +15,7 @@
                Recepción de los datos de configuración del sistema en la plataforma IotView
                Extracción de datos importantes del token
                Presentación del nombre del sistema en la pantalla
+               Estructura de información en IotView
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -57,15 +58,26 @@ Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi
 
 //Declaración de las variables para el uso del WiFi
 
-char ssid[] = "ssid";
-char password[] = "password";
+//char ssid[] = "ssid";
+//char password[] = "password";
 
 
-//Acciones propias de la aplicación en particular
+
+char ssid[] = "ALVAREZ MORALEZ";
+char password[] = "97395883";
+
+//const char* ssid     = "CesarAndroid";
+//const char* password = "24fb64ca5d11";
+
+
+
+
+
 
 //Taza de refresco de la tarea
 float tazaRefrescoSensorDHT =60;//Tiempo en segundos
 float tazaRefrescoStatus =1;//Tiempo en segundos
+
 float h=0;//Humedad
 float t=0;//Temperatura
 int i=0;//Numero de iteracción
@@ -106,8 +118,6 @@ void estadoStatus() {
         }       
 }
 
-//----------------------------------------------------------------------------------------------------------
-
 void setup() {
   // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
@@ -120,7 +130,7 @@ void setup() {
   
   //Inicialización de la pantalla OLED
   Figura.SetDisplay(&display);
-  Figura.Maqueta();//Muestra la cn¿onfiguración de la pantalla
+  Figura.Maqueta();
   Figura.Display();
  
   Figura.SetTrabajoEtiqueta1("T [°C]");
@@ -151,9 +161,22 @@ void setup() {
  Serial.print(IoTViewSistema.GetRespuesta());
  
  //Mostrar configuración de IotView
+ Serial.println("Respuesta de la API: ");
+ Serial.println("");
  IoTViewSistema.GetConfiguracion();
- Serial.print(IoTViewSistema.GetRespuesta());
- Serial.print("Nombre: ");
+ Serial.println(IoTViewSistema.GetRespuesta());
+ String Respuesta;
+ Respuesta=IoTViewSistema.GetRespuesta();
+ int h=Respuesta.indexOf("\n{");
+    int k=Respuesta.indexOf("}\n")+1;
+    String Datos=Respuesta.substring(h,k);
+ Serial.println("");
+ Serial.println("");
+ Serial.println(Datos);   
+ Serial.println("");
+ Serial.println("");
+ 
+  Serial.print("Nombre: ");
  Serial.println(IoTViewSistema.GetNombre());
   Figura.SetNombreServidor(IoTViewSistema.GetNombre());
  Serial.print("Descripcion: ");
