@@ -3,7 +3,7 @@
   Esp32: ok
 
   Desarrollado por: César Augusto Álvarez Gaspar
-  Fecha: 3 de abril de 2019
+  Fecha: 17 de mayo de 2019
 
   Versión: 0.0.16
   Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
@@ -16,6 +16,7 @@
                Extracción de datos importantes del token
                Presentación del nombre del sistema en la pantalla
                Estructura de información en IotView
+               Envio de datos por medio de API REST
                Nota: Encontré dificultades para usar Ticker y el Objeto Figura, por lo cual lo dejo en el loop()
 */
 
@@ -31,14 +32,6 @@ int status = WL_IDLE_STATUS;
 const int httpPort = 80;
 char host[]="iotview.herokuapp.com";
 char token[]="1:2;1/v9clypYoSq&2/YMyedSLQx0";
-/*
- *IdSistema=1 : 
- *NumeroSensores=2 ; 
- *IdSensor1=1 / 
- *TokenSensor1= v9clypYoSq & 
- *IdSensor2=2 / 
- *TokenSensor2= YMyedSLQx0 & 
- */
 
 //Declaración de objetos usados en IotView
 
@@ -48,34 +41,21 @@ WiFiClient client;
 
 //La pantalla tiene un acople debil con respecto al objeto de uso de IotView
 IotViewPantalla Figura;//Declaración del Objeto Figura
-IotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
+TIotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
 
 //Declaración de objetos usados en la aplicación en particular
 
 DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
-Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
+//Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
 
 //Declaración de las variables para el uso del WiFi
 
-//char ssid[] = "ssid";
-//char password[] = "password";
-
-
-
-char ssid[] = "ALVAREZ MORALEZ";
-char password[] = "97395883";
-
-//const char* ssid     = "CesarAndroid";
-//const char* password = "24fb64ca5d11";
-
-
-
-
-
+char ssid[] = "ssid";
+char password[] = "password";
 
 //Taza de refresco de la tarea
-float tazaRefrescoSensorDHT =60;//Tiempo en segundos
+float tazaRefrescoSensorDHT =30;//Tiempo en segundos
 float tazaRefrescoStatus =1;//Tiempo en segundos
 
 float h=0;//Humedad
@@ -83,11 +63,9 @@ float t=0;//Temperatura
 int i=0;//Numero de iteracción
 
 void leerSensorDHT() {
-  
   //Lectura del sensor
   h=dht.readHumidity();
   t=dht.readTemperature();
-  
   //Visualización de las lecturas
   Serial.print(h);
   Serial.print(",");
@@ -99,10 +77,13 @@ void leerSensorDHT() {
   Figura.SetApoyoVar2(++i);
 
   //Envio de las señales a la plataforma IotView
-  IoTViewSistema.EnviarDato(DirVarTrabajo1,t);
-  IoTViewSistema.EnviarDato(DirVarTrabajo2,h);
+//  IoTViewSistema.Sistema.Sensores[0].SetVar(t);
+//  IoTViewSistema.Sistema.Sensores[1].SetVar(h);
+  //IoTViewSistema.Push();
+  //Serial.println(IoTViewSistema.Push());
 }
 
+/*
 void estadoStatus() {
   if(WiFi.status() == WL_CONNECTED)
   {
@@ -117,7 +98,7 @@ void estadoStatus() {
             Figura.ServidorOff();
         }       
 }
-
+*/
 void setup() {
   // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
@@ -132,15 +113,16 @@ void setup() {
   Figura.SetDisplay(&display);
   Figura.Maqueta();
   Figura.Display();
+  //
  
-  Figura.SetTrabajoEtiqueta1("T [°C]");
-  Figura.SetTrabajoEtiqueta2("H [%]"); 
-  Figura.SetApoyoEtiqueta1("Ts");
-  Figura.SetApoyoEtiqueta2("Iteracción");
-  Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
-  Figura.SetApoyoVar2(0);
-  Figura.SetTrabajoVar1(0);
-  Figura.SetTrabajoVar2(0); 
+  //Figura.SetTrabajoEtiqueta1("T [°C]");
+  //Figura.SetTrabajoEtiqueta2("H [%]"); 
+  //Figura.SetApoyoEtiqueta1("Ts");
+  //Figura.SetApoyoEtiqueta2("Iteracción");
+  //Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
+  //Figura.SetApoyoVar2(0);
+  //Figura.SetTrabajoVar1(0);
+  //Figura.SetTrabajoVar2(0); 
 
   //Inicialización del WiFi
   WiFi.begin(ssid, password);
@@ -157,50 +139,33 @@ void setup() {
  //Inicialización de la comunicación a IotView
  Serial.print("connecting to ");
  Serial.println(host);
- IoTViewSistema.Conectar();
- Serial.print(IoTViewSistema.GetRespuesta());
- 
- //Mostrar configuración de IotView
- Serial.println("Respuesta de la API: ");
- Serial.println("");
  IoTViewSistema.GetConfiguracion();
- Serial.println(IoTViewSistema.GetRespuesta());
- String Respuesta;
- Respuesta=IoTViewSistema.GetRespuesta();
- int h=Respuesta.indexOf("\n{");
-    int k=Respuesta.indexOf("}\n")+1;
-    String Datos=Respuesta.substring(h,k);
- Serial.println("");
- Serial.println("");
- Serial.println(Datos);   
- Serial.println("");
- Serial.println("");
- 
-  Serial.print("Nombre: ");
- Serial.println(IoTViewSistema.GetNombre());
-  Figura.SetNombreServidor(IoTViewSistema.GetNombre());
- Serial.print("Descripcion: ");
- Serial.println(IoTViewSistema.GetDescripcion());
- Serial.print("Nvar: ");
- Serial.println(IoTViewSistema.GetNvar());
- Serial.print("Var: ");
- Serial.println(IoTViewSistema.GetVar());
- Serial.print("NMensaje: ");
- Serial.println(IoTViewSistema.GetNMensaje());
- Serial.print("Mensaje: ");
- Serial.println(IoTViewSistema.GetMensaje());
+ Serial.print(IoTViewSistema.GetRespuesta());
+ Serial.println(IoTViewSistema.Sistema.Sensores[0].GetNvar());
+  Serial.println(IoTViewSistema.Sistema.Sensores[1].GetNvar());
+  Figura.SetTrabajoEtiqueta1(IoTViewSistema.Sistema.Sensores[0].GetNvar());
+  Figura.SetTrabajoEtiqueta2(IoTViewSistema.Sistema.Sensores[1].GetNvar()); 
+  Figura.SetApoyoEtiqueta1("Ts");
+  Figura.SetApoyoEtiqueta2("Iteracción");
+  Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
+
+ //Mostrar configuración de IotView
+ //Serial.println("Respuesta de la API: ");
+ //Serial.println("");
+ //IoTViewSistema.GetConfiguracion();
+ //Serial.println(IoTViewSistema.GetRespuesta());
  
  //Inicialización del sensor
-  dht.begin();
+ dht.begin();
    
-  //Inicialización del Serial Ploter
-  Serial.print(0);
-  Serial.print(",");
-  Serial.println(0);
+ //Inicialización del Serial Ploter
+ Serial.print(0);
+ Serial.print(",");
+ Serial.println(0);
 
   //Inicialización de la tarea de refresco
   TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
-  TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
+  //TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
 }
 
 
