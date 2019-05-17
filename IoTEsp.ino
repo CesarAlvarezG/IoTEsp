@@ -47,7 +47,7 @@ TIotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto p
 
 DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
 Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
-//Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
+Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
 
 //Declaración de las variables para el uso del WiFi
 
@@ -70,20 +70,15 @@ void leerSensorDHT() {
   Serial.print(h);
   Serial.print(",");
   Serial.println(t);
-  
+  IoTViewSistema.Sistema.Sensores[0].SetVar(t);
+  IoTViewSistema.Sistema.Sensores[1].SetVar(h);
   //Visualización en la pantalla OLED
-  Figura.SetTrabajoVar1(t);
-  Figura.SetTrabajoVar2(h);
+  Figura.SetTrabajoVar1(IoTViewSistema.Sistema.Sensores[0].GetVar());
+  Figura.SetTrabajoVar2(IoTViewSistema.Sistema.Sensores[1].GetVar());
   Figura.SetApoyoVar2(++i);
-
-  //Envio de las señales a la plataforma IotView
-//  IoTViewSistema.Sistema.Sensores[0].SetVar(t);
-//  IoTViewSistema.Sistema.Sensores[1].SetVar(h);
-  //IoTViewSistema.Push();
-  //Serial.println(IoTViewSistema.Push());
 }
 
-/*
+
 void estadoStatus() {
   if(WiFi.status() == WL_CONNECTED)
   {
@@ -98,7 +93,7 @@ void estadoStatus() {
             Figura.ServidorOff();
         }       
 }
-*/
+
 void setup() {
   // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
@@ -113,17 +108,7 @@ void setup() {
   Figura.SetDisplay(&display);
   Figura.Maqueta();
   Figura.Display();
-  //
- 
-  //Figura.SetTrabajoEtiqueta1("T [°C]");
-  //Figura.SetTrabajoEtiqueta2("H [%]"); 
-  //Figura.SetApoyoEtiqueta1("Ts");
-  //Figura.SetApoyoEtiqueta2("Iteracción");
-  //Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
-  //Figura.SetApoyoVar2(0);
-  //Figura.SetTrabajoVar1(0);
-  //Figura.SetTrabajoVar2(0); 
-
+  
   //Inicialización del WiFi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) 
@@ -140,32 +125,18 @@ void setup() {
  Serial.print("connecting to ");
  Serial.println(host);
  IoTViewSistema.GetConfiguracion();
- Serial.print(IoTViewSistema.GetRespuesta());
- Serial.println(IoTViewSistema.Sistema.Sensores[0].GetNvar());
-  Serial.println(IoTViewSistema.Sistema.Sensores[1].GetNvar());
-  Figura.SetTrabajoEtiqueta1(IoTViewSistema.Sistema.Sensores[0].GetNvar());
-  Figura.SetTrabajoEtiqueta2(IoTViewSistema.Sistema.Sensores[1].GetNvar()); 
-  Figura.SetApoyoEtiqueta1("Ts");
-  Figura.SetApoyoEtiqueta2("Iteracción");
-  Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
+ Figura.SetTrabajoEtiqueta1(IoTViewSistema.Sistema.Sensores[0].GetNvar());
+ Figura.SetTrabajoEtiqueta2(IoTViewSistema.Sistema.Sensores[1].GetNvar()); 
+ Figura.SetApoyoEtiqueta1("Ts");
+ Figura.SetApoyoEtiqueta2("Iteracción");
+ Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
 
- //Mostrar configuración de IotView
- //Serial.println("Respuesta de la API: ");
- //Serial.println("");
- //IoTViewSistema.GetConfiguracion();
- //Serial.println(IoTViewSistema.GetRespuesta());
- 
- //Inicialización del sensor
+  //Inicialización del sensor
  dht.begin();
-   
- //Inicialización del Serial Ploter
- Serial.print(0);
- Serial.print(",");
- Serial.println(0);
 
   //Inicialización de la tarea de refresco
-  TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
-  //TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
+ TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
+ TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
 }
 
 
@@ -175,5 +146,7 @@ void setup() {
 void loop() 
 {
  Figura.Display();
+ //Envio de las señales a la plataforma IotView
+ IoTViewSistema.Push();
  delay(TAZA_REFRESCO_PANTALLA);
 }

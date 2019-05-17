@@ -181,11 +181,8 @@ String TIotView::Push(void)
  String cuerpo;
  Solicitud="/api/sistemas/";
  Solicitud+=urlencode(Sistema.PushJson());
- //Solicitud+="%7B%22id%22%3A2%2C%22Nombre%22%3A%22ApiIot%22%2C%22Descripcion%22%3A%22Prueba+de+envio+y+recepcion+de+datos+por+la+API%22%2C%22NVar%22%3A%22N+Sensores%22%2C%22Var%22%3A5%2C%22NMensaje%22%3A%22Estado%22%2C%22Mensaje%22%3A%22Lo+Mejor%22%2C%22sensors%22%3A%5B%7B%22id%22%3A4%2C%22Nombre%22%3A%22Decremento%22%2C%22Tipo%22%3A%22Sensor%22%2C%22NVar%22%3A%22Valor%22%2C%22Var%22%3A46%2C%22NMensaje%22%3A%22Estado%22%2C%22Mensaje%22%3A%22El+mejor+Ok%22%7D%2C%7B%22id%22%3A3%2C%22Nombre%22%3A%22Incremento%22%2C%22Tipo%22%3A%22Sensor%22%2C%22NVar%22%3A%22Valor%22%2C%22Var%22%3A210%2C%22NMensaje%22%3A%22Estado%22%2C%22Mensaje%22%3A%22Ok%22%7D%5D%7D";
  //Solicitud de los datos al servidor
  cuerpo="";
- //cuerpo+="Content-Type: application/x-www-form-urlencoded\r\n";
- //cuerpo+="\r\n";
  Respuesta=Conexion(Solicitud,"PUT",cuerpo);
  return Respuesta;
 }

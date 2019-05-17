@@ -22,7 +22,7 @@
 #define DTHTYPE DHT11 //Tipo de sensor
 
 
-#define TAZA_REFRESCO_PANTALLA 100//Taza de refresco de la pantalla
+#define TAZA_REFRESCO_PANTALLA 1000//Taza de refresco de la pantalla
 
 
 //Sensores creados en la plataforma IotView
