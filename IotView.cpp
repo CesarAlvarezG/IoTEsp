@@ -3,20 +3,16 @@
 
 //Constructor
 
-TIotView::TIotView(String host,String token, int port, WiFiClient *clie)
+TIotView::TIotView(String host,int id,String tok, int port, WiFiClient *clie)
 {
   Host=host;
-  Token=token;
+  Token=tok;
   httpPort=port;
   status=WL_IDLE_STATUS;
   cliente=clie;
   //Extraer datos de configuración del Token
-  int h=token.indexOf(":");
-  idSistema=token.substring(0,h).toInt();  
-  token.remove(0,h+1);
-  h=token.indexOf(";");
-  nSensores=token.substring(0,h).toInt();
-  token.remove(0,h+1);
+  idSistema=id;  
+  nSensores=1;
   Sistema.SetNSensores(nSensores);
 }
 
