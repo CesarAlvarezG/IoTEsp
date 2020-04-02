@@ -3,10 +3,12 @@
   Esp32: ok
 
   Desarrollado por: César Augusto Álvarez Gaspar
-  Fecha: 17 de mayo de 2019
+  Fecha: 2 de abril de 2020
 
-  Versión: 0.0.16
-  Descripción: Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
+  Versión: 0.0.17
+  Descripción: 
+               Programa de prueba con una función rampa hasta 100
+               Programa para el monitoreo de humedad y temperatura, visualizado por medio de una pantalla OLED
                Prueba de paralelismo con los leds LED_TEST y LED_BUILTIN
                Paralelismo de la lectura del sensor y el refresco de la pantalla
                Conexión al WiFi y monitoreo de la conexión
@@ -24,6 +26,9 @@
 #include <dummy.h> //Libreria para identificar los pines del EPS32
 #include <Ticker.h>//Libreria para el manejo de las tareas paralelas
 #include "IotView.h"//Libreria para la conexión a la plataforma IotView
+#include "IotViewEsp32.h"//Libreria para configurar el Esp32
+#include "SSD1306Wire.h"
+#include "IotViewOled.h"
 #include "DHT.h"  //Libreria para el DHT11
 
 //Declaración de los elementos para usar IotView
@@ -31,51 +36,40 @@
 int status = WL_IDLE_STATUS;
 const int httpPort = 80;
 char host[]="iotview.herokuapp.com";
-char token[]="1:2;1/v9clypYoSq&2/YMyedSLQx0";
+char token[]="RphPq81BeT";
+int idSistema=1;
 
 //Declaración de objetos usados en IotView
-
-
 SSD1306Wire  display(0x3c, 21, 22);//Declaración del Objeto display
 WiFiClient client;
-
-//La pantalla tiene un acople debil con respecto al objeto de uso de IotView
-IotViewPantalla Figura;//Declaración del Objeto Figura
-TIotView IoTViewSistema(host,token,httpPort,&client);//Declaración del Objeto para usar IotView
-
-//Declaración de objetos usados en la aplicación en particular
-
-DHT dht(DTHPIN, DTHTYPE); //Declaración del Objeto DHT
-Ticker TickerSensorDHT;//Declaración de la tarea de leer el sensor
-Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
-
-//Declaración de las variables para el uso del WiFi
-
 char ssid[] = "ssid";
 char password[] = "password";
 
+
+//La pantalla tiene un acople debil con respecto al objeto de uso de IotView
+IotViewPantalla Figura;//Declaración del Objeto Figura
+TIotView IoTViewSistema(host,idSistema,token,httpPort,&client);//Declaración del Objeto para usar IotView
+
+//Declaración de objetos usados en la aplicación en particular
+
+Ticker TickerStatus;//Declaración de la tarea de monitorear la conexión a WiFi y la plataforma IotView
+Ticker TickerSensor;//Declaración de la tarea de leer el sensor
 //Taza de refresco de la tarea
-float tazaRefrescoSensorDHT =30;//Tiempo en segundos
+float tazaRefrescoSensor =30;//Tiempo en segundos
 float tazaRefrescoStatus =1;//Tiempo en segundos
 
-float h=0;//Humedad
-float t=0;//Temperatura
-int i=0;//Numero de iteracción
+int iter=0;//Numero de iteracción
+float var=0;//Valor del sensor
 
-void leerSensorDHT() {
-  //Lectura del sensor
-  h=dht.readHumidity();
-  t=dht.readTemperature();
+void leerSensor() {
+  var++;
+  if(var>100)var=0;//Creación de Rampa hasta 100  
   //Visualización de las lecturas
-  Serial.print(h);
-  Serial.print(",");
-  Serial.println(t);
-  IoTViewSistema.Sistema.Sensores[0].SetVar(t);
-  IoTViewSistema.Sistema.Sensores[1].SetVar(h);
+  Serial.println(var);
+  IoTViewSistema.Sistema.Sensores[0].SetVar(var);
   //Visualización en la pantalla OLED
   Figura.SetTrabajoVar1(IoTViewSistema.Sistema.Sensores[0].GetVar());
-  Figura.SetTrabajoVar2(IoTViewSistema.Sistema.Sensores[1].GetVar());
-  Figura.SetApoyoVar2(++i);
+  Figura.SetApoyoVar2(++iter);
 }
 
 
@@ -98,12 +92,9 @@ void setup() {
   // Inicialización de los pines.
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(LED_TEST, OUTPUT);
-  
   //Inicialización de la comunicación serial
   Serial.begin(TAZA_SERIAL);
   Serial.println("\nPrograma para monitoreo de humedad y temperatura");
-  
-  
   //Inicialización de la pantalla OLED
   Figura.SetDisplay(&display);
   Figura.Maqueta();
@@ -129,14 +120,10 @@ void setup() {
  Figura.SetTrabajoEtiqueta2(IoTViewSistema.Sistema.Sensores[1].GetNvar()); 
  Figura.SetApoyoEtiqueta1("Ts");
  Figura.SetApoyoEtiqueta2("Iteracción");
- Figura.SetApoyoVar1(tazaRefrescoSensorDHT);
-
-  //Inicialización del sensor
- dht.begin();
-
-  //Inicialización de la tarea de refresco
- TickerSensorDHT.attach(tazaRefrescoSensorDHT, leerSensorDHT);
+ Figura.SetApoyoVar1(tazaRefrescoSensor);
+ //Inicialización de la tarea de refresco
  TickerStatus.attach(tazaRefrescoStatus, estadoStatus);
+ TickerSensor.attach(tazaRefrescoSensor, leerSensor);
 }
 
 
